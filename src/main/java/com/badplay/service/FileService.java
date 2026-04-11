@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+import io.minio.GetObjectArgs;
+import java.io.InputStream;
+
 @Service
 public class FileService {
 
@@ -45,4 +48,18 @@ public class FileService {
             throw new RuntimeException("Erro ao subir arquivo para o MinIO: " + e.getMessage());
         }
     }
+
+    public InputStream buscarArquivo(String nomeArquivo) {
+        try {
+            return minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(nomeArquivo)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar arquivo no MinIO: " + e.getMessage());
+        }
+    }
+
 }
