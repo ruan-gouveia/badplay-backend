@@ -2,6 +2,7 @@ package com.badplay.entity;
 
 import jakarta.persistence.*;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_episodio")
@@ -20,6 +21,7 @@ public class Episodio {
 
     private String trailerUrlYoutube;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temporada_id", nullable = false)
     private Temporada temporada;

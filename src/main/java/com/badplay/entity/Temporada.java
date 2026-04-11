@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_temporada")
@@ -16,6 +17,7 @@ public class Temporada {
     @Column(nullable = false)
     private Integer numeroTemporada;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "serie_id", nullable = false)
     private Serie serie;
