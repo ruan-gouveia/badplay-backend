@@ -7,6 +7,7 @@ public class SerieRequestDTO {
     private String descricao;
     private Integer anoLancamento;
     private List<TemporadaRequestDTO> temporadas;
+    private List<Long> generosIds;
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
@@ -16,4 +17,6 @@ public class SerieRequestDTO {
     public void setAnoLancamento(Integer anoLancamento) { this.anoLancamento = anoLancamento; }
     public List<TemporadaRequestDTO> getTemporadas() { return temporadas; }
     public void setTemporadas(List<TemporadaRequestDTO> temporadas) { this.temporadas = temporadas; }
+    public List<Long> getGenerosIds() { return generosIds; }
+    public void setGenerosIds(List<Long> generosIds) { this.generosIds = generosIds; }
 }
