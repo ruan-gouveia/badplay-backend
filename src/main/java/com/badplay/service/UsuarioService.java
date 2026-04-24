@@ -4,6 +4,7 @@ import com.badplay.dto.UsuarioRequestDTO;
 import com.badplay.dto.UsuarioResponseDTO;
 import com.badplay.entity.Usuario;
 import com.badplay.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +16,11 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioResponseDTO> listarTodos() {
@@ -35,15 +38,14 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO salvar(UsuarioRequestDTO dto) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(dto.getEmail());
-
         if (usuarioExistente.isPresent()) {
-            throw new RuntimeException("Já existe um usuário cadastrado com este email: " + dto.getEmail());
+            throw new RuntimeException("Já existe um usuário cadastrado com este email!");
         }
 
         Usuario usuario = dto.toEntity();
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
-
         return new UsuarioResponseDTO(usuarioSalvo);
     }
 
