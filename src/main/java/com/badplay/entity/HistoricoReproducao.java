@@ -23,6 +23,8 @@ public class HistoricoReproducao {
     @Column(nullable = false)
     private LocalDateTime dataHoraVisualizacao;
 
+    private Integer tempoAssistidoSegundos = 0;
+
     public HistoricoReproducao() {
     }
 
@@ -56,6 +58,14 @@ public class HistoricoReproducao {
 
     public void setDataHoraVisualizacao(LocalDateTime dataHoraVisualizacao) {
         this.dataHoraVisualizacao = dataHoraVisualizacao;
+    }
+
+    public Integer getTempoAssistidoSegundos() {
+        return tempoAssistidoSegundos;
+    }
+
+    public void setTempoAssistidoSegundos(Integer tempoAssistidoSegundos) {
+        this.tempoAssistidoSegundos = tempoAssistidoSegundos;
     }
 
     @Override
