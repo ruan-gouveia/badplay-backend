@@ -10,7 +10,7 @@ import com.badplay.repository.HistoricoReproducaoRepository;
 import com.badplay.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +32,8 @@ public class HistoricoService {
 
     @Transactional
     public HistoricoResponseDTO registrarOuAtualizar(HistoricoRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(emailLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         Conteudo conteudo = conteudoRepository.findById(dto.getConteudoId())
@@ -48,17 +49,18 @@ public class HistoricoService {
         }
 
         historico.setDataHoraVisualizacao(LocalDateTime.now());
-
         if (dto.getTempoAssistidoSegundos() != null) {
             historico.setTempoAssistidoSegundos(dto.getTempoAssistidoSegundos());
         }
 
-        HistoricoReproducao salvo = historicoRepository.save(historico);
-        return new HistoricoResponseDTO(salvo);
+        return new HistoricoResponseDTO(historicoRepository.save(historico));
     }
 
-    public List<HistoricoResponseDTO> buscarHistoricoDoUsuario(Long usuarioId) {
-        return historicoRepository.findByUsuarioIdOrderByDataHoraVisualizacaoDesc(usuarioId)
+    public List<HistoricoResponseDTO> buscarMeuHistorico() {
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(emailLogado).orElseThrow();
+
+        return historicoRepository.findByUsuarioIdOrderByDataHoraVisualizacaoDesc(usuario.getId())
                 .stream()
                 .map(HistoricoResponseDTO::new)
                 .collect(Collectors.toList());

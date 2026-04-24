@@ -2,10 +2,7 @@ package com.badplay.dto;
 
 public class ListaDesejoRequestDTO {
     private String nome;
-    private Long usuarioId;
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-    public Long getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 }

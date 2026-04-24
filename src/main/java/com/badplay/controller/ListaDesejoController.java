@@ -40,8 +40,8 @@ public class ListaDesejoController {
         }
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<ListaDesejoResponseDTO>> buscarDoUsuario(@PathVariable Long usuarioId) {
-        return ResponseEntity.ok(listaService.buscarPorUsuario(usuarioId));
+    @GetMapping("/minhas")
+    public ResponseEntity<List<ListaDesejoResponseDTO>> buscarMinhasListas() {
+        return ResponseEntity.ok(listaService.buscarMinhasListas());
     }
 }

@@ -11,7 +11,7 @@ import com.badplay.repository.PlanoRepository;
 import com.badplay.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDate;
 
 @Service
@@ -31,8 +31,11 @@ public class AssinaturaService {
 
     @Transactional
     public AssinaturaResponseDTO assinar(AssinaturaRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        String emailDoUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Usuario usuario = usuarioRepository.findByEmail(emailDoUsuarioLogado)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado no banco"));
 
         Plano plano = planoRepository.findById(dto.getPlanoId())
                 .orElseThrow(() -> new RuntimeException("Plano não encontrado"));

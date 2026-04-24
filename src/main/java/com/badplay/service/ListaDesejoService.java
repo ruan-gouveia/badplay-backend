@@ -10,7 +10,7 @@ import com.badplay.repository.ListaDesejoRepository;
 import com.badplay.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +32,8 @@ public class ListaDesejoService {
 
     @Transactional
     public ListaDesejoResponseDTO criarLista(ListaDesejoRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(emailLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         ListaDesejo lista = new ListaDesejo();
@@ -40,14 +41,18 @@ public class ListaDesejoService {
         lista.setUsuario(usuario);
         lista.setDataCriacao(LocalDate.now());
 
-        ListaDesejo salva = listaRepository.save(lista);
-        return new ListaDesejoResponseDTO(salva);
+        return new ListaDesejoResponseDTO(listaRepository.save(lista));
     }
 
     @Transactional
     public ListaDesejoResponseDTO adicionarConteudo(Long listaId, Long conteudoId) {
         ListaDesejo lista = listaRepository.findById(listaId)
                 .orElseThrow(() -> new RuntimeException("Lista não encontrada"));
+
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!lista.getUsuario().getEmail().equals(emailLogado)) {
+            throw new RuntimeException("Acesso Negado: Você não é o dono desta lista!");
+        }
 
         Conteudo conteudo = conteudoRepository.findById(conteudoId)
                 .orElseThrow(() -> new RuntimeException("Conteúdo não encontrado"));
@@ -60,8 +65,11 @@ public class ListaDesejoService {
         return new ListaDesejoResponseDTO(lista);
     }
 
-    public List<ListaDesejoResponseDTO> buscarPorUsuario(Long usuarioId) {
-        return listaRepository.findByUsuarioId(usuarioId).stream()
+    public List<ListaDesejoResponseDTO> buscarMinhasListas() {
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(emailLogado).orElseThrow();
+
+        return listaRepository.findByUsuarioId(usuario.getId()).stream()
                 .map(ListaDesejoResponseDTO::new)
                 .collect(Collectors.toList());
     }

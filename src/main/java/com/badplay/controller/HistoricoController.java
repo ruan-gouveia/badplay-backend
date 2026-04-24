@@ -28,8 +28,8 @@ public class HistoricoController {
         }
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<HistoricoResponseDTO>> listar(@PathVariable Long usuarioId) {
-        return ResponseEntity.ok(historicoService.buscarHistoricoDoUsuario(usuarioId));
+    @GetMapping("/meu-historico")
+    public ResponseEntity<List<HistoricoResponseDTO>> listarMeuHistorico() {
+        return ResponseEntity.ok(historicoService.buscarMeuHistorico());
     }
 }
