@@ -30,10 +30,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
+
+                    //ROTAS DO SWAGGER E ERROS INTERNOS
+                    req.requestMatchers(
+                            "/v3/api-docs",
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/error"
+                    ).permitAll();
+
+                    //ROTAS PÚBLICAS DA API
                     req.requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/arquivos/**").permitAll();
 
+                    //ROTAS EXCLUSIVAS DE ADMINISTRADOR
                     req.requestMatchers(HttpMethod.POST, "/api/filmes", "/api/series", "/api/generos", "/api/planos").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.PUT, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.DELETE, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");

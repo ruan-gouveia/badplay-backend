@@ -1,6 +1,7 @@
 package com.badplay.controller;
 
 import com.badplay.service.FileService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
 
+@Hidden
 @RestController
 @RequestMapping("/api/arquivos")
 @CrossOrigin(origins = "*")
