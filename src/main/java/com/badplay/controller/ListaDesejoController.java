@@ -22,22 +22,14 @@ public class ListaDesejoController {
 
     @PostMapping
     public ResponseEntity<ListaDesejoResponseDTO> criar(@RequestBody ListaDesejoRequestDTO dto) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(listaService.criarLista(dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(listaService.criarLista(dto));
     }
 
     @PutMapping("/{listaId}/adicionar/{conteudoId}")
     public ResponseEntity<ListaDesejoResponseDTO> adicionarConteudo(
             @PathVariable Long listaId,
             @PathVariable Long conteudoId) {
-        try {
-            return ResponseEntity.ok(listaService.adicionarConteudo(listaId, conteudoId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(listaService.adicionarConteudo(listaId, conteudoId));
     }
 
     @GetMapping("/minhas")

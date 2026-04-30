@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 @Table(name = "tb_conteudo")
@@ -23,6 +25,9 @@ public abstract class Conteudo {
     private Integer anoLancamento;
 
     private String capaUrlMinio;
+
+    @Enumerated(EnumType.STRING)
+    private TipoPlano planoMinimo = TipoPlano.BASICO;
 
     @ManyToMany
     @JoinTable(
@@ -81,6 +86,14 @@ public abstract class Conteudo {
 
     public void setGeneros(List<Genero> generos) {
         this.generos = generos;
+    }
+
+    public TipoPlano getPlanoMinimo() {
+        return planoMinimo;
+    }
+
+    public void setPlanoMinimo(TipoPlano planoMinimo) {
+        this.planoMinimo = planoMinimo;
     }
 
     @Override

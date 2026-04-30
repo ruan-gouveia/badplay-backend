@@ -61,6 +61,10 @@ public class SerieService {
             }
         }
 
+        if (dto.getPlanoMinimo() != null) {
+            serie.setPlanoMinimo(dto.getPlanoMinimo());
+        }
+
         return serieRepository.save(serie);
     }
 }

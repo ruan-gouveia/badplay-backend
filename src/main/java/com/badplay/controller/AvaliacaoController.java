@@ -21,11 +21,7 @@ public class AvaliacaoController {
 
     @PostMapping
     public ResponseEntity<AvaliacaoResponseDTO> avaliar(@RequestBody AvaliacaoRequestDTO dto) {
-        try {
-            return ResponseEntity.ok(avaliacaoService.salvar(dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(avaliacaoService.salvar(dto));
     }
 
     @GetMapping("/conteudo/{conteudoId}")

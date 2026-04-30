@@ -26,11 +26,7 @@ public class GeneroController {
 
     @PostMapping
     public ResponseEntity<Genero> criar(@RequestBody Genero genero) {
-        try {
-            Genero salvo = generoService.salvar(genero);
-            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Genero salvo = generoService.salvar(genero);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 }

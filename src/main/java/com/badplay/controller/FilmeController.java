@@ -25,11 +25,7 @@ public class FilmeController {
             @RequestPart("dados") FilmeRequestDTO dto,
             @RequestPart("capa") MultipartFile capa
     ) {
-        try {
-            Filme filmeSalvo = filmeService.salvar(dto, capa);
-            return ResponseEntity.status(HttpStatus.CREATED).body(filmeSalvo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Filme filmeSalvo = filmeService.salvar(dto, capa);
+        return ResponseEntity.status(HttpStatus.CREATED).body(filmeSalvo);
     }
 }

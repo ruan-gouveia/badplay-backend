@@ -19,11 +19,7 @@ public class AssinaturaController {
 
     @PostMapping
     public ResponseEntity<AssinaturaResponseDTO> assinar(@RequestBody AssinaturaRequestDTO dto) {
-        try {
-            AssinaturaResponseDTO novaAssinatura = assinaturaService.assinar(dto);
-            return ResponseEntity.ok(novaAssinatura);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        AssinaturaResponseDTO novaAssinatura = assinaturaService.assinar(dto);
+        return ResponseEntity.ok(novaAssinatura);
     }
 }

@@ -1,6 +1,7 @@
 package com.badplay.dto;
 
 import java.util.List;
+import com.badplay.entity.TipoPlano;
 
 public class FilmeRequestDTO {
     private String titulo;
@@ -9,6 +10,7 @@ public class FilmeRequestDTO {
     private Integer duracaoMinutos;
     private String trailerUrlYoutube;
     private List<Long> generosIds;
+    private TipoPlano planoMinimo;
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
@@ -22,4 +24,6 @@ public class FilmeRequestDTO {
     public void setTrailerUrlYoutube(String trailerUrlYoutube) { this.trailerUrlYoutube = trailerUrlYoutube; }
     public List<Long> getGenerosIds() { return generosIds; }
     public void setGenerosIds(List<Long> generosIds) { this.generosIds = generosIds; }
+    public TipoPlano getPlanoMinimo() { return planoMinimo; }
+    public void setPlanoMinimo(TipoPlano planoMinimo) { this.planoMinimo = planoMinimo; }
 }

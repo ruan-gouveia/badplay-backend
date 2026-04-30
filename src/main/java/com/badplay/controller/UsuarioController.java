@@ -35,21 +35,13 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
-        try {
-            UsuarioResponseDTO usuarioSalvo = usuarioService.salvar(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioSalvo);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        UsuarioResponseDTO usuarioSalvo = usuarioService.salvar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioSalvo);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        try {
-            usuarioService.deletar(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        usuarioService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

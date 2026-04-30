@@ -32,6 +32,13 @@ public class AssinaturaService {
     @Transactional
     public AssinaturaResponseDTO assinar(AssinaturaRequestDTO dto) {
 
+        if (dto.getNumeroCartao() == null || dto.getNumeroCartao().length() < 16) {
+            throw new RuntimeException("Pagamento Recusado: Número de cartão inválido.");
+        }
+        if (dto.getCvv() == null || dto.getCvv().length() < 3) {
+            throw new RuntimeException("Pagamento Recusado: CVV inválido.");
+        }
+
         String emailDoUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Usuario usuario = usuarioRepository.findByEmail(emailDoUsuarioLogado)

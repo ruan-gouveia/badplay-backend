@@ -38,6 +38,11 @@ public class FilmeService {
             List<Genero> generosEncontrados = generoService.buscarPorIds(dto.getGenerosIds());
             filme.setGeneros(generosEncontrados);
         }
+
+        if (dto.getPlanoMinimo() != null) {
+            filme.setPlanoMinimo(dto.getPlanoMinimo());
+        }
+
         return filmeRepository.save(filme);
     }
 }

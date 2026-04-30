@@ -2,9 +2,8 @@ package com.badplay.service;
 
 import com.badplay.dto.HistoricoRequestDTO;
 import com.badplay.dto.HistoricoResponseDTO;
-import com.badplay.entity.Conteudo;
-import com.badplay.entity.HistoricoReproducao;
-import com.badplay.entity.Usuario;
+import com.badplay.entity.*;
+import com.badplay.repository.AssinaturaRepository;
 import com.badplay.repository.ConteudoRepository;
 import com.badplay.repository.HistoricoReproducaoRepository;
 import com.badplay.repository.UsuarioRepository;
@@ -21,13 +20,16 @@ public class HistoricoService {
     private final HistoricoReproducaoRepository historicoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ConteudoRepository conteudoRepository;
+    private final AssinaturaRepository assinaturaRepository;
 
     public HistoricoService(HistoricoReproducaoRepository historicoRepository,
                             UsuarioRepository usuarioRepository,
-                            ConteudoRepository conteudoRepository) {
+                            ConteudoRepository conteudoRepository,
+                            AssinaturaRepository assinaturaRepository) {
         this.historicoRepository = historicoRepository;
         this.usuarioRepository = usuarioRepository;
         this.conteudoRepository = conteudoRepository;
+        this.assinaturaRepository = assinaturaRepository;
     }
 
     @Transactional
@@ -38,6 +40,15 @@ public class HistoricoService {
 
         Conteudo conteudo = conteudoRepository.findById(dto.getConteudoId())
                 .orElseThrow(() -> new RuntimeException("Conteúdo não encontrado"));
+
+        Assinatura assinatura = assinaturaRepository
+                .findFirstByUsuarioIdAndStatus(usuario.getId(), StatusAssinatura.ATIVA)
+                .orElseThrow(() -> new RuntimeException("Acesso Negado: Você não possui uma assinatura ativa!"));
+
+        if (assinatura.getPlano().getTipo().ordinal() < conteudo.getPlanoMinimo().ordinal()) {
+            throw new RuntimeException("Acesso Negado: Este conteúdo exige o plano " +
+                    conteudo.getPlanoMinimo() + ". Faça o upgrade da sua assinatura.");
+        }
 
         HistoricoReproducao historico = historicoRepository
                 .findByUsuarioIdAndConteudoId(usuario.getId(), conteudo.getId())

@@ -18,14 +18,10 @@ public class HistoricoController {
     public HistoricoController(HistoricoService historicoService) {
         this.historicoService = historicoService;
     }
-
+    
     @PostMapping
     public ResponseEntity<HistoricoResponseDTO> registrar(@RequestBody HistoricoRequestDTO dto) {
-        try {
-            return ResponseEntity.ok(historicoService.registrarOuAtualizar(dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(historicoService.registrarOuAtualizar(dto));
     }
 
     @GetMapping("/meu-historico")
