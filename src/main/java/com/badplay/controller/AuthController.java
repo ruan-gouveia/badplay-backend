@@ -4,6 +4,7 @@ import com.badplay.dto.LoginRequestDTO;
 import com.badplay.dto.TokenResponseDTO;
 import com.badplay.entity.Usuario;
 import com.badplay.security.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha());
 

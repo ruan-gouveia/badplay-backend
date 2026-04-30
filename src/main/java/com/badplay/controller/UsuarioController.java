@@ -6,7 +6,7 @@ import com.badplay.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +34,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
         try {
             UsuarioResponseDTO usuarioSalvo = usuarioService.salvar(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioSalvo);
