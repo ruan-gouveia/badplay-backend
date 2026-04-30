@@ -45,4 +45,39 @@ public class FilmeService {
 
         return filmeRepository.save(filme);
     }
+
+    @Transactional
+    public Filme atualizar(Long id, FilmeRequestDTO dto, MultipartFile capa) {
+        Filme filme = filmeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
+
+        filme.setTitulo(dto.getTitulo());
+        filme.setDescricao(dto.getDescricao());
+        filme.setAnoLancamento(dto.getAnoLancamento());
+        filme.setDuracaoMinutos(dto.getDuracaoMinutos());
+        filme.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
+
+        if (dto.getPlanoMinimo() != null) {
+            filme.setPlanoMinimo(dto.getPlanoMinimo());
+        }
+
+        if (dto.getGenerosIds() != null && !dto.getGenerosIds().isEmpty()) {
+            filme.setGeneros(generoService.buscarPorIds(dto.getGenerosIds()));
+        }
+
+        if (capa != null && !capa.isEmpty()) {
+            String nomeCapa = fileService.uploadArquivo(capa);
+            filme.setCapaUrlMinio(nomeCapa);
+        }
+
+        return filmeRepository.save(filme);
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+        if (!filmeRepository.existsById(id)) {
+            throw new RuntimeException("Filme não encontrado com ID: " + id);
+        }
+        filmeRepository.deleteById(id);
+    }
 }

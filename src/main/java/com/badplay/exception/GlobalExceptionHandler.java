@@ -1,5 +1,6 @@
 package com.badplay.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,6 +28,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> lidarComRegrasDeNegocio(RuntimeException ex) {
         Map<String, String> erro = new HashMap<>();
         erro.put("erro", ex.getMessage());
+        return ResponseEntity.badRequest().body(erro);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> lidarComErroDeIntegridade(DataIntegrityViolationException ex) {
+        Map<String, String> erro = new HashMap<>();
+        erro.put("erro", "Operação não permitida. Este registro está vinculado a outros dados no sistema (Ex: Histórico ou Avaliações).");
         return ResponseEntity.badRequest().body(erro);
     }
 }

@@ -67,4 +67,58 @@ public class SerieService {
 
         return serieRepository.save(serie);
     }
+
+    @Transactional
+    public Serie atualizar(Long id, SerieRequestDTO dto, MultipartFile capa) {
+        Serie serie = serieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Série não encontrada"));
+
+        serie.setTitulo(dto.getTitulo());
+        serie.setDescricao(dto.getDescricao());
+        serie.setAnoLancamento(dto.getAnoLancamento());
+
+        if (dto.getPlanoMinimo() != null) {
+            serie.setPlanoMinimo(dto.getPlanoMinimo());
+        }
+
+        if (dto.getGenerosIds() != null && !dto.getGenerosIds().isEmpty()) {
+            serie.setGeneros(generoService.buscarPorIds(dto.getGenerosIds()));
+        }
+
+        if (capa != null && !capa.isEmpty()) {
+            String nomeCapa = fileService.uploadArquivo(capa);
+            serie.setCapaUrlMinio(nomeCapa);
+        }
+
+        if (dto.getTemporadas() != null) {
+            serie.getTemporadas().clear();
+            for (TemporadaRequestDTO tempDto : dto.getTemporadas()) {
+                Temporada temporada = new Temporada();
+                temporada.setNumeroTemporada(tempDto.getNumeroTemporada());
+                temporada.setSerie(serie);
+                if (tempDto.getEpisodios() != null) {
+                    for (EpisodioRequestDTO epDto : tempDto.getEpisodios()) {
+                        Episodio episodio = new Episodio();
+                        episodio.setNome(epDto.getNome());
+                        episodio.setNumeroEpisodio(epDto.getNumeroEpisodio());
+                        episodio.setDuracaoMinutos(epDto.getDuracaoMinutos());
+                        episodio.setTrailerUrlYoutube(epDto.getTrailerUrlYoutube());
+                        episodio.setTemporada(temporada);
+                        temporada.getEpisodios().add(episodio);
+                    }
+                }
+                serie.getTemporadas().add(temporada);
+            }
+        }
+
+        return serieRepository.save(serie);
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+        if (!serieRepository.existsById(id)) {
+            throw new RuntimeException("Série não encontrada");
+        }
+        serieRepository.deleteById(id);
+    }
 }

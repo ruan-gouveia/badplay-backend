@@ -33,4 +33,19 @@ public class SerieController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Serie> atualizar(
+            @PathVariable Long id,
+            @RequestPart("dados") SerieRequestDTO dto,
+            @RequestPart(value = "capa", required = false) MultipartFile capa) {
+
+        return ResponseEntity.ok(serieService.atualizar(id, dto, capa));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        serieService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
