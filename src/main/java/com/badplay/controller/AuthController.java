@@ -28,13 +28,17 @@ public class AuthController {
     public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha());
-
             Authentication auth = authenticationManager.authenticate(usernamePassword);
 
             Usuario usuarioLogado = (Usuario) auth.getPrincipal();
             String tokenJWT = tokenService.gerarToken(usuarioLogado);
 
-            return ResponseEntity.ok(new TokenResponseDTO(tokenJWT));
+            return ResponseEntity.ok(new TokenResponseDTO(
+                    tokenJWT,
+                    usuarioLogado.getId(),
+                    usuarioLogado.getNome(),
+                    usuarioLogado.getPerfil().name()
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }

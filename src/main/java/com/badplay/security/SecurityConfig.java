@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration; // IMPORT NOVO
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -27,25 +30,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("*"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    return config;
+                }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
 
-                    //ROTAS DO SWAGGER E ERROS INTERNOS
-                    req.requestMatchers(
-                            "/v3/api-docs",
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/error"
-                    ).permitAll();
+                    req.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll();
 
-                    //ROTAS PÚBLICAS DA API
                     req.requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/arquivos/**").permitAll();
 
-                    //ROTAS EXCLUSIVAS DE ADMINISTRADOR
                     req.requestMatchers(HttpMethod.POST, "/api/filmes", "/api/series", "/api/generos", "/api/planos").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.PUT, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.DELETE, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
