@@ -64,4 +64,17 @@ public class AvaliacaoService {
                 .map(AvaliacaoResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void deletar(Long id) {
+        Avaliacao avaliacao = avaliacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
+
+        String emailLogado = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!avaliacao.getUsuario().getEmail().equals(emailLogado)) {
+            throw new RuntimeException("Acesso Negado: Esta avaliação não pertence a você.");
+        }
+
+        avaliacaoRepository.delete(avaliacao);
+    }
 }

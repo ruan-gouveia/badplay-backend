@@ -50,4 +50,13 @@ public class FilmeController {
     public ResponseEntity<List<Filme>> listarTodos() {
         return ResponseEntity.ok(filmeService.listarTodos());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Filme> buscarPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(filmeService.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

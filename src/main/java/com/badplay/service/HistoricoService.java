@@ -45,9 +45,10 @@ public class HistoricoService {
                 .findFirstByUsuarioIdAndStatus(usuario.getId(), StatusAssinatura.ATIVA)
                 .orElseThrow(() -> new RuntimeException("Acesso Negado: Você não possui uma assinatura ativa!"));
 
-        if (assinatura.getPlano().getTipo().ordinal() < conteudo.getPlanoMinimo().ordinal()) {
-            throw new RuntimeException("Acesso Negado: Este conteúdo exige o plano " +
-                    conteudo.getPlanoMinimo() + ". Faça o upgrade da sua assinatura.");
+        TipoPlano planoDoConteudo = conteudo.getPlanoMinimo() != null ? conteudo.getPlanoMinimo() : TipoPlano.BASICO;
+
+        if (assinatura.getPlano().getTipo().ordinal() < planoDoConteudo.ordinal()) {
+            throw new RuntimeException("Acesso Negado: Este conteúdo exige o plano " + planoDoConteudo + ". Faça o upgrade da sua assinatura.");
         }
 
         HistoricoReproducao historico = historicoRepository
@@ -75,5 +76,19 @@ public class HistoricoService {
                 .stream()
                 .map(HistoricoResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+        HistoricoReproducao historico = historicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Histórico não encontrado"));
+
+        String emailLogado = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!historico.getUsuario().getEmail().equals(emailLogado)) {
+            throw new RuntimeException("Acesso Negado: Este histórico não pertence a você.");
+        }
+
+        historicoRepository.delete(historico);
     }
 }

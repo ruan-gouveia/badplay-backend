@@ -28,4 +28,10 @@ public class HistoricoController {
     public ResponseEntity<List<HistoricoResponseDTO>> listarMeuHistorico() {
         return ResponseEntity.ok(historicoService.buscarMeuHistorico());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        historicoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

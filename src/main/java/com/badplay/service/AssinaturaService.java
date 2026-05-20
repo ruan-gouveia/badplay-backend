@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class AssinaturaService {
@@ -31,7 +32,6 @@ public class AssinaturaService {
 
     @Transactional
     public AssinaturaResponseDTO assinar(AssinaturaRequestDTO dto) {
-
         if (dto.getNumeroCartao() == null || dto.getNumeroCartao().length() < 16) {
             throw new RuntimeException("Pagamento Recusado: Número de cartão inválido.");
         }
@@ -40,12 +40,17 @@ public class AssinaturaService {
         }
 
         String emailDoUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Usuario usuario = usuarioRepository.findByEmail(emailDoUsuarioLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado no banco"));
 
         Plano plano = planoRepository.findById(dto.getPlanoId())
                 .orElseThrow(() -> new RuntimeException("Plano não encontrado"));
+
+        List<Assinatura> ativas = assinaturaRepository.findAllByUsuarioIdAndStatus(usuario.getId(), StatusAssinatura.ATIVA);
+        for (Assinatura ativa : ativas) {
+            ativa.setStatus(StatusAssinatura.CANCELADA);
+            assinaturaRepository.save(ativa);
+        }
 
         Assinatura assinatura = new Assinatura();
         assinatura.setUsuario(usuario);
@@ -55,7 +60,6 @@ public class AssinaturaService {
         assinatura.setStatus(StatusAssinatura.ATIVA);
 
         Assinatura assinaturaSalva = assinaturaRepository.save(assinatura);
-
         return new AssinaturaResponseDTO(assinaturaSalva);
     }
 }

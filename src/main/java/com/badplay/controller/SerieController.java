@@ -55,4 +55,13 @@ public class SerieController {
     public ResponseEntity<List<Serie>> listarTodos() {
         return ResponseEntity.ok(serieService.listarTodos());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Serie> buscarPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(serieService.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

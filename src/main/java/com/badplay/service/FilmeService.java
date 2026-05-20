@@ -84,4 +84,9 @@ public class FilmeService {
     public List<Filme> listarTodos() {
         return filmeRepository.findAll();
     }
+
+    public Filme buscarPorId(Long id) {
+        return filmeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
+    }
 }

@@ -125,4 +125,9 @@ public class SerieService {
     public List<Serie> listarTodos() {
         return serieRepository.findAll();
     }
+
+    public Serie buscarPorId(Long id) {
+        return serieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Série não encontrada"));
+    }
 }

@@ -28,4 +28,10 @@ public class AvaliacaoController {
     public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorConteudo(@PathVariable Long conteudoId) {
         return ResponseEntity.ok(avaliacaoService.buscarPorConteudo(conteudoId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        avaliacaoService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
