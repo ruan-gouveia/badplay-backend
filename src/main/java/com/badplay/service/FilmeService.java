@@ -80,4 +80,8 @@ public class FilmeService {
         }
         filmeRepository.deleteById(id);
     }
+
+    public List<Filme> listarTodos() {
+        return filmeRepository.findAll();
+    }
 }

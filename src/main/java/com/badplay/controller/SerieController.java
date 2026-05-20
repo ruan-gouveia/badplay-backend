@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/series")
 @CrossOrigin(origins = "*")
@@ -47,5 +49,10 @@ public class SerieController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         serieService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Serie>> listarTodos() {
+        return ResponseEntity.ok(serieService.listarTodos());
     }
 }

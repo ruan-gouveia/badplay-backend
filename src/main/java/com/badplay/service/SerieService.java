@@ -121,4 +121,8 @@ public class SerieService {
         }
         serieRepository.deleteById(id);
     }
+
+    public List<Serie> listarTodos() {
+        return serieRepository.findAll();
+    }
 }
