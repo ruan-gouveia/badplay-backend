@@ -36,4 +36,32 @@ public class ListaDesejoController {
     public ResponseEntity<List<ListaDesejoResponseDTO>> buscarMinhasListas() {
         return ResponseEntity.ok(listaService.buscarMinhasListas());
     }
+
+    @PutMapping("/{listaId}")
+    public ResponseEntity<ListaDesejoResponseDTO> renomearLista(@PathVariable Long listaId, @RequestBody ListaDesejoRequestDTO dto) {
+        try {
+            return ResponseEntity.ok(listaService.renomearLista(listaId, dto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{listaId}/remover/{conteudoId}")
+    public ResponseEntity<ListaDesejoResponseDTO> removerConteudo(@PathVariable Long listaId, @PathVariable Long conteudoId) {
+        try {
+            return ResponseEntity.ok(listaService.removerConteudo(listaId, conteudoId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{listaId}")
+    public ResponseEntity<Void> deletarLista(@PathVariable Long listaId) {
+        try {
+            listaService.deletarLista(listaId);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

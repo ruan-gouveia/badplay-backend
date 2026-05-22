@@ -73,4 +73,42 @@ public class ListaDesejoService {
                 .map(ListaDesejoResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+    private void validarDonoDaLista(ListaDesejo lista) {
+        String emailLogado = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!lista.getUsuario().getEmail().equals(emailLogado)) {
+            throw new RuntimeException("Acesso Negado: Você não é o dono desta lista.");
+        }
+    }
+
+    @Transactional
+    public ListaDesejoResponseDTO renomearLista(Long listaId, ListaDesejoRequestDTO dto) {
+        ListaDesejo lista = listaRepository.findById(listaId)
+                .orElseThrow(() -> new RuntimeException("Lista não encontrada"));
+        validarDonoDaLista(lista);
+
+        lista.setNome(dto.getNome());
+        return new ListaDesejoResponseDTO(listaRepository.save(lista));
+    }
+
+    @Transactional
+    public ListaDesejoResponseDTO removerConteudo(Long listaId, Long conteudoId) {
+        ListaDesejo lista = listaRepository.findById(listaId)
+                .orElseThrow(() -> new RuntimeException("Lista não encontrada"));
+        validarDonoDaLista(lista);
+
+        Conteudo conteudo = conteudoRepository.findById(conteudoId)
+                .orElseThrow(() -> new RuntimeException("Conteúdo não encontrado"));
+
+        lista.getConteudos().remove(conteudo);
+        return new ListaDesejoResponseDTO(listaRepository.save(lista));
+    }
+
+    @Transactional
+    public void deletarLista(Long listaId) {
+        ListaDesejo lista = listaRepository.findById(listaId)
+                .orElseThrow(() -> new RuntimeException("Lista não encontrada"));
+        validarDonoDaLista(lista);
+        listaRepository.delete(lista);
+    }
 }
