@@ -4,14 +4,18 @@ import com.badplay.dto.EpisodioRequestDTO;
 import com.badplay.dto.SerieRequestDTO;
 import com.badplay.dto.TemporadaRequestDTO;
 import com.badplay.entity.Episodio;
-import com.badplay.entity.Genero; // Importe Genero
+import com.badplay.entity.Genero;
 import com.badplay.entity.Serie;
 import com.badplay.entity.Temporada;
+import com.badplay.repository.AvaliacaoRepository;
+import com.badplay.repository.HistoricoReproducaoRepository;
+import com.badplay.repository.ListaDesejoRepository;
 import com.badplay.repository.SerieRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List; // Importe List
+
+import java.util.List;
 
 @Service
 public class SerieService {
@@ -19,11 +23,31 @@ public class SerieService {
     private final SerieRepository serieRepository;
     private final FileService fileService;
     private final GeneroService generoService;
+    private final HistoricoReproducaoRepository historicoRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final ListaDesejoRepository listaDesejoRepository;
 
-    public SerieService(SerieRepository serieRepository, FileService fileService, GeneroService generoService) {
+    public SerieService(SerieRepository serieRepository,
+                        FileService fileService,
+                        GeneroService generoService,
+                        HistoricoReproducaoRepository historicoRepository,
+                        AvaliacaoRepository avaliacaoRepository,
+                        ListaDesejoRepository listaDesejoRepository) {
         this.serieRepository = serieRepository;
         this.fileService = fileService;
         this.generoService = generoService;
+        this.historicoRepository = historicoRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.listaDesejoRepository = listaDesejoRepository;
+    }
+
+    public List<Serie> listarTodos() {
+        return serieRepository.findAll();
+    }
+
+    public Serie buscarPorId(Long id) {
+        return serieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Série não encontrada"));
     }
 
     @Transactional
@@ -35,6 +59,10 @@ public class SerieService {
         serie.setDescricao(dto.getDescricao());
         serie.setAnoLancamento(dto.getAnoLancamento());
         serie.setCapaUrlMinio(nomeCapa);
+
+        if (dto.getPlanoMinimo() != null) {
+            serie.setPlanoMinimo(dto.getPlanoMinimo());
+        }
 
         if (dto.getGenerosIds() != null && !dto.getGenerosIds().isEmpty()) {
             List<Genero> generosEncontrados = generoService.buscarPorIds(dto.getGenerosIds());
@@ -59,10 +87,6 @@ public class SerieService {
                 }
                 serie.getTemporadas().add(temporada);
             }
-        }
-
-        if (dto.getPlanoMinimo() != null) {
-            serie.setPlanoMinimo(dto.getPlanoMinimo());
         }
 
         return serieRepository.save(serie);
@@ -117,17 +141,13 @@ public class SerieService {
     @Transactional
     public void deletar(Long id) {
         if (!serieRepository.existsById(id)) {
-            throw new RuntimeException("Série não encontrada");
+            throw new RuntimeException("Série não encontrada com ID: " + id);
         }
+
+        historicoRepository.deleteByConteudoId(id);
+        avaliacaoRepository.deleteByConteudoId(id);
+        listaDesejoRepository.deleteConteudoFromAllListas(id);
+
         serieRepository.deleteById(id);
-    }
-
-    public List<Serie> listarTodos() {
-        return serieRepository.findAll();
-    }
-
-    public Serie buscarPorId(Long id) {
-        return serieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Série não encontrada"));
     }
 }

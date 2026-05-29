@@ -3,10 +3,14 @@ package com.badplay.service;
 import com.badplay.dto.FilmeRequestDTO;
 import com.badplay.entity.Filme;
 import com.badplay.entity.Genero;
+import com.badplay.repository.AvaliacaoRepository;
 import com.badplay.repository.FilmeRepository;
+import com.badplay.repository.HistoricoReproducaoRepository;
+import com.badplay.repository.ListaDesejoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @Service
@@ -15,11 +19,31 @@ public class FilmeService {
     private final FilmeRepository filmeRepository;
     private final FileService fileService;
     private final GeneroService generoService;
+    private final HistoricoReproducaoRepository historicoRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final ListaDesejoRepository listaDesejoRepository;
 
-    public FilmeService(FilmeRepository filmeRepository, FileService fileService, GeneroService generoService) {
+    public FilmeService(FilmeRepository filmeRepository,
+                        FileService fileService,
+                        GeneroService generoService,
+                        HistoricoReproducaoRepository historicoRepository,
+                        AvaliacaoRepository avaliacaoRepository,
+                        ListaDesejoRepository listaDesejoRepository) {
         this.filmeRepository = filmeRepository;
         this.fileService = fileService;
         this.generoService = generoService;
+        this.historicoRepository = historicoRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.listaDesejoRepository = listaDesejoRepository;
+    }
+
+    public List<Filme> listarTodos() {
+        return filmeRepository.findAll();
+    }
+
+    public Filme buscarPorId(Long id) {
+        return filmeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
     }
 
     @Transactional
@@ -34,13 +58,13 @@ public class FilmeService {
         filme.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
         filme.setCapaUrlMinio(nomeCapa);
 
+        if (dto.getPlanoMinimo() != null) {
+            filme.setPlanoMinimo(dto.getPlanoMinimo());
+        }
+
         if (dto.getGenerosIds() != null && !dto.getGenerosIds().isEmpty()) {
             List<Genero> generosEncontrados = generoService.buscarPorIds(dto.getGenerosIds());
             filme.setGeneros(generosEncontrados);
-        }
-
-        if (dto.getPlanoMinimo() != null) {
-            filme.setPlanoMinimo(dto.getPlanoMinimo());
         }
 
         return filmeRepository.save(filme);
@@ -78,15 +102,11 @@ public class FilmeService {
         if (!filmeRepository.existsById(id)) {
             throw new RuntimeException("Filme não encontrado com ID: " + id);
         }
+
+        historicoRepository.deleteByConteudoId(id);
+        avaliacaoRepository.deleteByConteudoId(id);
+        listaDesejoRepository.deleteConteudoFromAllListas(id);
+
         filmeRepository.deleteById(id);
-    }
-
-    public List<Filme> listarTodos() {
-        return filmeRepository.findAll();
-    }
-
-    public Filme buscarPorId(Long id) {
-        return filmeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
     }
 }

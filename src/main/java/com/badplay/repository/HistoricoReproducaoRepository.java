@@ -11,4 +11,8 @@ public interface HistoricoReproducaoRepository extends JpaRepository<HistoricoRe
     List<HistoricoReproducao> findByUsuarioIdOrderByDataHoraVisualizacaoDesc(Long usuarioId);
 
     Optional<HistoricoReproducao> findByUsuarioIdAndConteudoId(Long usuarioId, Long conteudoId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM HistoricoReproducao h WHERE h.conteudo.id = :conteudoId")
+    void deleteByConteudoId(@org.springframework.data.repository.query.Param("conteudoId") Long conteudoId);
 }
