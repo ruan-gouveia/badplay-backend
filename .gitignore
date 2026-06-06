@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar pastas de imagens locais e backups do banco
+badplay-imagens/
+*.sql
