@@ -18,7 +18,7 @@ public class HistoricoController {
     public HistoricoController(HistoricoService historicoService) {
         this.historicoService = historicoService;
     }
-    
+
     @PostMapping
     public ResponseEntity<HistoricoResponseDTO> registrar(@RequestBody HistoricoRequestDTO dto) {
         return ResponseEntity.ok(historicoService.registrarOuAtualizar(dto));
@@ -27,6 +27,11 @@ public class HistoricoController {
     @GetMapping("/meu-historico")
     public ResponseEntity<List<HistoricoResponseDTO>> listarMeuHistorico() {
         return ResponseEntity.ok(historicoService.buscarMeuHistorico());
+    }
+
+    @GetMapping("/total-hoje")
+    public ResponseEntity<Long> totalReproducoesHoje() {
+        return ResponseEntity.ok(historicoService.contarReproducoesHoje());
     }
 
     @DeleteMapping("/{id}")

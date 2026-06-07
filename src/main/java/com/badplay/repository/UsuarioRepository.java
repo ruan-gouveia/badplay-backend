@@ -1,5 +1,6 @@
 package com.badplay.repository;
 
+import com.badplay.entity.Role;
 import com.badplay.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,4 +12,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByEmail(String email);
 
+    long countByPerfil(Role perfil);
 }

@@ -10,6 +10,8 @@ import com.badplay.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,12 +80,18 @@ public class HistoricoService {
                 .collect(Collectors.toList());
     }
 
+    public long contarReproducoesHoje() {
+        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
+        LocalDateTime fimDoDia = inicioDoDia.plusDays(1);
+        return historicoRepository.countByDataHoraVisualizacaoBetween(inicioDoDia, fimDoDia);
+    }
+
     @Transactional
     public void deletar(Long id) {
         HistoricoReproducao historico = historicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Histórico não encontrado"));
 
-        String emailLogado = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (!historico.getUsuario().getEmail().equals(emailLogado)) {
             throw new RuntimeException("Acesso Negado: Este histórico não pertence a você.");

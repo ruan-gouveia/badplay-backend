@@ -33,6 +33,11 @@ public class UsuarioController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/total-ativos")
+    public ResponseEntity<Long> totalUsuariosAtivos() {
+        return ResponseEntity.ok(usuarioService.contarUsuariosAtivos());
+    }
+
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
         UsuarioResponseDTO usuarioSalvo = usuarioService.salvar(dto);

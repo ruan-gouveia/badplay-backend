@@ -2,6 +2,7 @@ package com.badplay.service;
 
 import com.badplay.dto.UsuarioRequestDTO;
 import com.badplay.dto.UsuarioResponseDTO;
+import com.badplay.entity.Role;
 import com.badplay.entity.Usuario;
 import com.badplay.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,10 @@ public class UsuarioService {
     public Optional<UsuarioResponseDTO> buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .map(UsuarioResponseDTO::new);
+    }
+
+    public long contarUsuariosAtivos() {
+        return usuarioRepository.countByPerfil(Role.ROLE_CLIENTE);
     }
 
     @Transactional

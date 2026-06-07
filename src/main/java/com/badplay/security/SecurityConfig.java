@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration; // IMPORT NOVO
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
@@ -50,6 +50,9 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/api/filmes", "/api/series", "/api/generos", "/api/planos").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.PUT, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.DELETE, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
+
+                    req.requestMatchers(HttpMethod.GET, "/api/usuarios/total-ativos").hasAuthority("ROLE_ADMIN");
+                    req.requestMatchers(HttpMethod.GET, "/api/historico/total-hoje").hasAuthority("ROLE_ADMIN");
 
                     req.anyRequest().authenticated();
                 })
