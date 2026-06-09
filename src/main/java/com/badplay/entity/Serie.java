@@ -11,10 +11,20 @@ import java.util.List;
 @Table(name = "tb_serie")
 public class Serie extends Conteudo {
 
+    private String trailerUrlYoutube;
+
     @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Temporada> temporadas = new ArrayList<>();
 
     public Serie() {
+    }
+
+    public String getTrailerUrlYoutube() {
+        return trailerUrlYoutube;
+    }
+
+    public void setTrailerUrlYoutube(String trailerUrlYoutube) {
+        this.trailerUrlYoutube = trailerUrlYoutube;
     }
 
     public List<Temporada> getTemporadas() {

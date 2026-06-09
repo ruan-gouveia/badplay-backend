@@ -59,6 +59,7 @@ public class SerieService {
         serie.setDescricao(dto.getDescricao());
         serie.setAnoLancamento(dto.getAnoLancamento());
         serie.setCapaUrlMinio(nomeCapa);
+        serie.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
 
         if (dto.getPlanoMinimo() != null) {
             serie.setPlanoMinimo(dto.getPlanoMinimo());
@@ -100,6 +101,7 @@ public class SerieService {
         serie.setTitulo(dto.getTitulo());
         serie.setDescricao(dto.getDescricao());
         serie.setAnoLancamento(dto.getAnoLancamento());
+        serie.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
 
         if (dto.getPlanoMinimo() != null) {
             serie.setPlanoMinimo(dto.getPlanoMinimo());

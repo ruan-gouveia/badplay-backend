@@ -7,6 +7,7 @@ public class SerieRequestDTO {
     private String titulo;
     private String descricao;
     private Integer anoLancamento;
+    private String trailerUrlYoutube;
     private List<TemporadaRequestDTO> temporadas;
     private List<Long> generosIds;
     private TipoPlano planoMinimo;
@@ -17,6 +18,8 @@ public class SerieRequestDTO {
     public void setDescricao(String descricao) { this.descricao = descricao; }
     public Integer getAnoLancamento() { return anoLancamento; }
     public void setAnoLancamento(Integer anoLancamento) { this.anoLancamento = anoLancamento; }
+    public String getTrailerUrlYoutube() { return trailerUrlYoutube; }
+    public void setTrailerUrlYoutube(String trailerUrlYoutube) { this.trailerUrlYoutube = trailerUrlYoutube; }
     public List<TemporadaRequestDTO> getTemporadas() { return temporadas; }
     public void setTemporadas(List<TemporadaRequestDTO> temporadas) { this.temporadas = temporadas; }
     public List<Long> getGenerosIds() { return generosIds; }
