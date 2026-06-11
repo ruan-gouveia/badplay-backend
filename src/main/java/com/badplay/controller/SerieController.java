@@ -1,6 +1,5 @@
 package com.badplay.controller;
 
-import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.SerieRequestDTO;
 import com.badplay.entity.Serie;
 import com.badplay.service.SerieService;
@@ -39,7 +38,7 @@ public class SerieController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Serie> atualizar(
-            @PathVariable("id") Long id,
+            @PathVariable Long id,
             @RequestPart("dados") SerieRequestDTO dto,
             @RequestPart(value = "capa", required = false) MultipartFile capa) {
 
@@ -47,7 +46,7 @@ public class SerieController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         serieService.deletar(id);
         return ResponseEntity.noContent().build();
     }
@@ -57,13 +56,8 @@ public class SerieController {
         return ResponseEntity.ok(serieService.listarTodos());
     }
 
-    @GetMapping("/resumo")
-    public ResponseEntity<List<ConteudoCardDTO>> listarResumo() {
-        return ResponseEntity.ok(serieService.listarResumo());
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Serie> buscarPorId(@PathVariable("id") Long id) {
+    public ResponseEntity<Serie> buscarPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(serieService.buscarPorId(id));
         } catch (RuntimeException e) {

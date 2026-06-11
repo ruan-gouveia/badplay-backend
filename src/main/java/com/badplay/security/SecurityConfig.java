@@ -41,34 +41,15 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
 
-                    req.requestMatchers(
-                            "/v3/api-docs",
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/error"
-                    ).permitAll();
+                    req.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll();
 
-                    req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll();
-
+                    req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/arquivos/**").permitAll();
 
-                    // Libera apenas leitura do catálogo
-                    req.requestMatchers(HttpMethod.GET, "/api/conteudos/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/api/filmes/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/api/series/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/api/generos/**").permitAll();
-
-                    // Administração continua protegida
-                    req.requestMatchers(HttpMethod.POST, "/api/filmes", "/api/series", "/api/generos", "/api/planos")
-                            .hasAuthority("ROLE_ADMIN");
-
-                    req.requestMatchers(HttpMethod.PUT, "/api/filmes/**", "/api/series/**", "/api/generos/**", "/api/planos/**")
-                            .hasAuthority("ROLE_ADMIN");
-
-                    req.requestMatchers(HttpMethod.DELETE, "/api/filmes/**", "/api/series/**", "/api/generos/**", "/api/planos/**")
-                            .hasAuthority("ROLE_ADMIN");
+                    req.requestMatchers(HttpMethod.POST, "/api/filmes", "/api/series", "/api/generos", "/api/planos").hasAuthority("ROLE_ADMIN");
+                    req.requestMatchers(HttpMethod.PUT, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
+                    req.requestMatchers(HttpMethod.DELETE, "/api/filmes/**", "/api/series/**").hasAuthority("ROLE_ADMIN");
 
                     req.requestMatchers(HttpMethod.GET, "/api/usuarios/total-ativos").hasAuthority("ROLE_ADMIN");
                     req.requestMatchers(HttpMethod.GET, "/api/historico/total-hoje").hasAuthority("ROLE_ADMIN");
