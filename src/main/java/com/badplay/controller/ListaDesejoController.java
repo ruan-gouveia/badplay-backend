@@ -28,7 +28,7 @@ public class ListaDesejoController {
     @PutMapping("/{listaId}/adicionar/{conteudoId}")
     public ResponseEntity<ListaDesejoResponseDTO> adicionarConteudo(
             @PathVariable Long listaId,
-            @PathVariable("conteudoId") Long conteudoId) {
+            @PathVariable Long conteudoId) {
         return ResponseEntity.ok(listaService.adicionarConteudo(listaId, conteudoId));
     }
 

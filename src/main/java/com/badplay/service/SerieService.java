@@ -1,6 +1,5 @@
 package com.badplay.service;
 
-import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.EpisodioRequestDTO;
 import com.badplay.dto.SerieRequestDTO;
 import com.badplay.dto.TemporadaRequestDTO;
@@ -44,14 +43,6 @@ public class SerieService {
 
     public List<Serie> listarTodos() {
         return serieRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public List<ConteudoCardDTO> listarResumo() {
-        return serieRepository.findAll()
-                .stream()
-                .map(ConteudoCardDTO::fromEntity)
-                .toList();
     }
 
     public Serie buscarPorId(Long id) {
