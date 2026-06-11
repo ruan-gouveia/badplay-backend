@@ -1,6 +1,5 @@
 package com.badplay.controller;
 
-import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.SerieRequestDTO;
 import com.badplay.entity.Serie;
 import com.badplay.service.SerieService;
@@ -23,51 +22,39 @@ public class SerieController {
         this.serieService = serieService;
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Serie> criarSerie(
-            @RequestPart("dados") SerieRequestDTO dto,
-            @RequestPart("capa") MultipartFile capa
-    ) {
-        try {
-            Serie serieSalva = serieService.salvar(dto, capa);
-            return ResponseEntity.status(HttpStatus.CREATED).body(serieSalva);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Serie> atualizar(
-            @PathVariable("id") Long id,
-            @RequestPart("dados") SerieRequestDTO dto,
-            @RequestPart(value = "capa", required = false) MultipartFile capa) {
-
-        return ResponseEntity.ok(serieService.atualizar(id, dto, capa));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
-        serieService.deletar(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping
     public ResponseEntity<List<Serie>> listarTodos() {
         return ResponseEntity.ok(serieService.listarTodos());
     }
 
-    @GetMapping("/resumo")
-    public ResponseEntity<List<ConteudoCardDTO>> listarResumo() {
-        return ResponseEntity.ok(serieService.listarResumo());
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Serie> buscarPorId(@PathVariable("id") Long id) {
+    public ResponseEntity<Serie> buscarPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(serieService.buscarPorId(id));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Serie> criarSerie(
+            @RequestPart("dados") SerieRequestDTO dto,
+            @RequestPart("capa") MultipartFile capa
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(serieService.salvar(dto, capa));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Serie> atualizar(
+            @PathVariable Long id,
+            @RequestPart("dados") SerieRequestDTO dto,
+            @RequestPart(value = "capa", required = false) MultipartFile capa) {
+        return ResponseEntity.ok(serieService.atualizar(id, dto, capa));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        serieService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,5 @@
 package com.badplay.service;
 
-import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.EpisodioRequestDTO;
 import com.badplay.dto.SerieRequestDTO;
 import com.badplay.dto.TemporadaRequestDTO;
@@ -12,6 +11,8 @@ import com.badplay.repository.AvaliacaoRepository;
 import com.badplay.repository.HistoricoReproducaoRepository;
 import com.badplay.repository.ListaDesejoRepository;
 import com.badplay.repository.SerieRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,8 @@ public class SerieService {
     private final SerieRepository serieRepository;
     private final FileService fileService;
     private final GeneroService generoService;
+
+    // Repositórios para a exclusão em cascata
     private final HistoricoReproducaoRepository historicoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
     private final ListaDesejoRepository listaDesejoRepository;
@@ -42,23 +45,41 @@ public class SerieService {
         this.listaDesejoRepository = listaDesejoRepository;
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable("series")
     public List<Serie> listarTodos() {
-        return serieRepository.findAll();
+        List<Serie> series = serieRepository.findAll();
+
+        for (Serie serie : series) {
+            if (serie.getTemporadas() != null) {
+                serie.getTemporadas().size();
+                for (Temporada temp : serie.getTemporadas()) {
+                    if (temp.getEpisodios() != null) {
+                        temp.getEpisodios().size();
+                    }
+                }
+            }
+        }
+        return series;
     }
 
     @Transactional(readOnly = true)
-    public List<ConteudoCardDTO> listarResumo() {
-        return serieRepository.findAll()
-                .stream()
-                .map(ConteudoCardDTO::fromEntity)
-                .toList();
-    }
-
     public Serie buscarPorId(Long id) {
-        return serieRepository.findById(id)
+        Serie serie = serieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Série não encontrada"));
+
+        if (serie.getTemporadas() != null) {
+            serie.getTemporadas().size();
+            for (Temporada temp : serie.getTemporadas()) {
+                if (temp.getEpisodios() != null) {
+                    temp.getEpisodios().size();
+                }
+            }
+        }
+        return serie;
     }
 
+    @CacheEvict(value = "series", allEntries = true)
     @Transactional
     public Serie salvar(SerieRequestDTO dto, MultipartFile capa) {
         String nomeCapa = fileService.uploadArquivo(capa);
@@ -68,7 +89,11 @@ public class SerieService {
         serie.setDescricao(dto.getDescricao());
         serie.setAnoLancamento(dto.getAnoLancamento());
         serie.setCapaUrlMinio(nomeCapa);
-        serie.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
+
+        // Mapeamento do trailer principal da Série (Adicionado pelo Mateus)
+        if (dto.getTrailerUrlYoutube() != null) {
+            serie.setTrailerUrlYoutube(dto.getTrailerUrlYoutube());
+        }
 
         if (dto.getPlanoMinimo() != null) {
             serie.setPlanoMinimo(dto.getPlanoMinimo());
@@ -79,6 +104,7 @@ public class SerieService {
             serie.setGeneros(generosEncontrados);
         }
 
+        // Mapeamento em Cascata de Temporadas e Episódios
         if (dto.getTemporadas() != null) {
             for (TemporadaRequestDTO tempDto : dto.getTemporadas()) {
                 Temporada temporada = new Temporada();
@@ -102,6 +128,7 @@ public class SerieService {
         return serieRepository.save(serie);
     }
 
+    @CacheEvict(value = "series", allEntries = true)
     @Transactional
     public Serie atualizar(Long id, SerieRequestDTO dto, MultipartFile capa) {
         Serie serie = serieRepository.findById(id)
@@ -149,6 +176,7 @@ public class SerieService {
         return serieRepository.save(serie);
     }
 
+    @CacheEvict(value = "series", allEntries = true)
     @Transactional
     public void deletar(Long id) {
         if (!serieRepository.existsById(id)) {

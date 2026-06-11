@@ -1,6 +1,5 @@
 package com.badplay.service;
 
-import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.FilmeRequestDTO;
 import com.badplay.entity.Filme;
 import com.badplay.entity.Genero;
@@ -8,6 +7,8 @@ import com.badplay.repository.AvaliacaoRepository;
 import com.badplay.repository.FilmeRepository;
 import com.badplay.repository.HistoricoReproducaoRepository;
 import com.badplay.repository.ListaDesejoRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,8 @@ public class FilmeService {
     private final FilmeRepository filmeRepository;
     private final FileService fileService;
     private final GeneroService generoService;
+
+    // Repositórios para a exclusão em cascata (Delete Absoluto)
     private final HistoricoReproducaoRepository historicoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
     private final ListaDesejoRepository listaDesejoRepository;
@@ -38,16 +41,10 @@ public class FilmeService {
         this.listaDesejoRepository = listaDesejoRepository;
     }
 
+    // GUARDA A LISTA EM MEMÓRIA CACHE
+    @Cacheable("filmes")
     public List<Filme> listarTodos() {
         return filmeRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public List<ConteudoCardDTO> listarResumo() {
-        return filmeRepository.findAll()
-                .stream()
-                .map(ConteudoCardDTO::fromEntity)
-                .toList();
     }
 
     public Filme buscarPorId(Long id) {
@@ -55,6 +52,8 @@ public class FilmeService {
                 .orElseThrow(() -> new RuntimeException("Filme não encontrado"));
     }
 
+    // SE SALVAR UM NOVO, APAGA O CACHE PARA FORÇAR ATUALIZAÇÃO
+    @CacheEvict(value = "filmes", allEntries = true)
     @Transactional
     public Filme salvar(FilmeRequestDTO dto, MultipartFile capa) {
         String nomeCapa = fileService.uploadArquivo(capa);
@@ -79,6 +78,7 @@ public class FilmeService {
         return filmeRepository.save(filme);
     }
 
+    @CacheEvict(value = "filmes", allEntries = true)
     @Transactional
     public Filme atualizar(Long id, FilmeRequestDTO dto, MultipartFile capa) {
         Filme filme = filmeRepository.findById(id)
@@ -98,6 +98,7 @@ public class FilmeService {
             filme.setGeneros(generoService.buscarPorIds(dto.getGenerosIds()));
         }
 
+        // Atualiza a imagem apenas se o Admin enviar uma nova
         if (capa != null && !capa.isEmpty()) {
             String nomeCapa = fileService.uploadArquivo(capa);
             filme.setCapaUrlMinio(nomeCapa);
@@ -106,12 +107,14 @@ public class FilmeService {
         return filmeRepository.save(filme);
     }
 
+    @CacheEvict(value = "filmes", allEntries = true)
     @Transactional
     public void deletar(Long id) {
         if (!filmeRepository.existsById(id)) {
             throw new RuntimeException("Filme não encontrado com ID: " + id);
         }
 
+        // Limpa os vestígios do filme para evitar erro de integridade (Foreign Key)
         historicoRepository.deleteByConteudoId(id);
         avaliacaoRepository.deleteByConteudoId(id);
         listaDesejoRepository.deleteConteudoFromAllListas(id);

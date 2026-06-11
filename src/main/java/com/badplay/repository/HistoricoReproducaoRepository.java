@@ -22,4 +22,7 @@ public interface HistoricoReproducaoRepository extends JpaRepository<HistoricoRe
 
     @Query("SELECT COUNT(h) FROM HistoricoReproducao h WHERE h.dataHoraVisualizacao >= :inicio AND h.dataHoraVisualizacao < :fim")
     long countByDataHoraVisualizacaoBetween(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(h) FROM HistoricoReproducao h WHERE CAST(h.dataHoraVisualizacao AS date) = CURRENT_DATE")
+    long countReproducoesHoje();
 }
