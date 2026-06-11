@@ -35,7 +35,7 @@ public class HistoricoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         historicoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
