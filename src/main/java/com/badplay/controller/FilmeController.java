@@ -1,5 +1,6 @@
 package com.badplay.controller;
 
+import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.FilmeRequestDTO;
 import com.badplay.entity.Filme;
 import com.badplay.service.FilmeService;
@@ -33,7 +34,7 @@ public class FilmeController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Filme> atualizar(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestPart("dados") FilmeRequestDTO dto,
             @RequestPart(value = "capa", required = false) MultipartFile capa) {
 
@@ -41,7 +42,7 @@ public class FilmeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         filmeService.deletar(id);
         return ResponseEntity.noContent().build();
     }
@@ -51,8 +52,13 @@ public class FilmeController {
         return ResponseEntity.ok(filmeService.listarTodos());
     }
 
+    @GetMapping("/resumo")
+    public ResponseEntity<List<ConteudoCardDTO>> listarResumo() {
+        return ResponseEntity.ok(filmeService.listarResumo());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Filme> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Filme> buscarPorId(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok(filmeService.buscarPorId(id));
         } catch (RuntimeException e) {

@@ -25,12 +25,12 @@ public class AvaliacaoController {
     }
 
     @GetMapping("/conteudo/{conteudoId}")
-    public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorConteudo(@PathVariable Long conteudoId) {
+    public ResponseEntity<List<AvaliacaoResponseDTO>> listarPorConteudo(@PathVariable("conteudoId") Long conteudoId) {
         return ResponseEntity.ok(avaliacaoService.buscarPorConteudo(conteudoId));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         avaliacaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }

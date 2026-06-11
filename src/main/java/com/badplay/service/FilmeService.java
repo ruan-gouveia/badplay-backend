@@ -1,5 +1,6 @@
 package com.badplay.service;
 
+import com.badplay.dto.ConteudoCardDTO;
 import com.badplay.dto.FilmeRequestDTO;
 import com.badplay.entity.Filme;
 import com.badplay.entity.Genero;
@@ -39,6 +40,14 @@ public class FilmeService {
 
     public List<Filme> listarTodos() {
         return filmeRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConteudoCardDTO> listarResumo() {
+        return filmeRepository.findAll()
+                .stream()
+                .map(ConteudoCardDTO::fromEntity)
+                .toList();
     }
 
     public Filme buscarPorId(Long id) {
